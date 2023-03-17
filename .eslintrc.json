@@ -1,0 +1,6 @@
+{
+  "extends": ["@sujian/vue3-ts", "./.eslintrc-auto-import.json"],
+  "globals": {
+    "chrome": true
+  }
+}

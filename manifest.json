@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YApi",
+  "version": "1.0",
+  "description": "test",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": ["https://*/*"],
+      "run_at": "document_end"
+    }
+  ]
+}
