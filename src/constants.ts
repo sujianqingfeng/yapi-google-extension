@@ -7,3 +7,7 @@ export const DEFAULT_OPTIONS: YApiOptions = {
   matchRe: '/project/\\d+/interface/api/\\d+',
 }
 
+export const isRequired = (text: string): boolean => {
+  return text === '是'
+}
+

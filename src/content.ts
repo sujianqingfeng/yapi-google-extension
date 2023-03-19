@@ -1,6 +1,6 @@
 import { getItem } from './utils'
-import { YAPI_KEY, DEFAULT_OPTIONS } from './constants'
-import type { YApiOptions } from './types'
+import { YAPI_KEY, DEFAULT_OPTIONS, isRequired } from './constants'
+import type { Query, YApiOptions } from './types'
 
 const sleep = (time = 1000) => new Promise(resolve => setTimeout(resolve, time))
 
@@ -18,6 +18,33 @@ const createElementClick = (el: HTMLElement, onclick: () => void) => {
   el.onclick = onclick
 }
 
+const getTdTextFromTBody = (tBody: Element) => {
+  const texts: string[][] = []
+  tBody.querySelectorAll('tr')
+    .forEach(tr => {
+      const text: string[] = [] 
+      tr.querySelectorAll('td')
+        .forEach(td => {
+          const innerText = td.innerText
+          text.push(innerText)
+        })
+      texts.push(text)
+    })
+
+  return texts
+}
+
+const toQueryFromTdTexts = (texts: string[][]): Query[]  => {
+  return texts.map(text => {
+    const [key, required, _, remark] = text
+    return {
+      key,
+      required: isRequired(required),
+      remark
+    } as Query
+  })
+}
+
 const insertQuery = () => {
 
   const queryEl = document.querySelector('.colQuery')
@@ -27,6 +54,14 @@ const insertQuery = () => {
     console.log('click icon')
     const tBodyEl = queryEl?.querySelector('.ant-table-tbody')
     console.log('🚀 ~ file: content.ts:29 ~ createElementClick ~ tBodyEl:', tBodyEl)
+    if (!tBodyEl) {
+      return
+    }
+    const texts =  getTdTextFromTBody(tBodyEl)
+    console.log('texts', texts)
+    const query = toQueryFromTdTexts(texts)
+    console.log('🚀 ~ file: content.ts:63 ~ createElementClick ~ query:', query)
+    
   })
 
   queryEl?.insertBefore(iconEl, queryEl.firstChild)
