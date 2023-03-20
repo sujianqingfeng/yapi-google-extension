@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { YApiOptions } from './types'
 import { YAPI_KEY, DEFAULT_OPTIONS } from './constants'
-import { getItem, setItem } from './utils'
+import { getItem, setItem, transformOptions } from './utils'
 
 const { message } = useMessage() 
 const options = ref<YApiOptions>(DEFAULT_OPTIONS)
@@ -9,6 +9,7 @@ const options = ref<YApiOptions>(DEFAULT_OPTIONS)
 onMounted(async () => {
   const opts = await getItem<YApiOptions>(YAPI_KEY)
   if (opts) {
+    transformOptions(opts)
     options.value = opts
   }
 })
@@ -30,7 +31,10 @@ const onSave = async () => {
       <el-radio label="ts">ts</el-radio>
       <el-radio label="js">js</el-radio>
     </el-radio-group>
-    <div>
+    <h3>not contain query key</h3>
+    <KeyTag v-model="options.queryNotContain" />
+
+    <div class="mt-4">
       <el-button type="primary" @click="onSave">save</el-button>
     </div>
   </div>

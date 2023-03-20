@@ -1,7 +1,8 @@
 
 export interface YApiOptions {
-  lang: 'js'|'ts',
+  lang: 'js'|'ts'
   matchRe: string
+  queryNotContain: string[]
 }
 
 export interface Query {

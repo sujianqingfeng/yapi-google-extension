@@ -11,5 +11,7 @@ declare module '@vue/runtime-core' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElRadio: typeof import('element-plus/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElTag: typeof import('element-plus/es')['ElTag']
+    KeyTag: typeof import('./../src/components/KeyTag.vue')['default']
   }
 }

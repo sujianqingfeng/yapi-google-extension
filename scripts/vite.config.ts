@@ -12,7 +12,12 @@ export default defineConfig({
     AutoImport({
       resolvers: [ElementPlusResolver()],
       dts: 'types/auto-imports.d.ts',
-      imports: ['vue',],
+      imports: [
+        'vue',
+        {
+          '@vueuse/core': ['useVModels', 'useClipboard']
+        }
+      ],
       dirs: ['src/composables'],
       vueTemplate: true,
       eslintrc: {
@@ -25,7 +30,8 @@ export default defineConfig({
           importStyle: 'sass'
         }),
       ],
-      dts: 'types/components.d.ts'
+      dts: 'types/components.d.ts',
+      dirs: ['src/components'],
     }),
   ],
 })
