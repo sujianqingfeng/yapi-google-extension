@@ -175,7 +175,7 @@ const getType = (type: string) => {
   }
 }
 
-const extractResponseTypeFromResponseList = (responseList: Response[]) => {
+const extractResponseTypeFromResponseList = (responseList: Response[], options: YApiOptions) => {
   const getStr = (response: Response): string => {
     const { key, type, children, remark } = response
     if (children) {
@@ -185,7 +185,7 @@ const extractResponseTypeFromResponseList = (responseList: Response[]) => {
       }${  isArray ? '[]' : ''}`
     }
     if (key) {
-      const comment = remark ? `  // ${remark}\n` : ''
+      const comment = remark && options.comment ? `  // ${remark}\n` : ''
       return `${comment  }${key}: ${getType(type)}`
     }
     return ''
@@ -210,7 +210,7 @@ const toQueryFromTdTexts = (texts: string[][]): Query[]  => {
   })
 }
 
-const extractQueryFormQueryList = (queryList: Query[], notContainKeys: string[]) => {
+const extractQueryFormQueryList = (queryList: Query[], notContainKeys: string[], options: YApiOptions) => {
   const filterList =  queryList.filter(query => {
     return !notContainKeys.includes(query.key)
   })
@@ -219,23 +219,23 @@ const extractQueryFormQueryList = (queryList: Query[], notContainKeys: string[])
     {
       ${filterList .map(item => {
     const { key, remark }  = item
-    const comment = remark ? `  // ${remark}\n` : ''
+    const comment = remark && options.comment ? `  // ${remark}\n` : ''
     return `${comment}  ${key}: ''` 
   }).join(',\n')}
     }
   `
 }
 
-const extractBodyFormTextTree = (textTrees: TextTree[]): string => {
+const extractBodyFormTextTree = (textTrees: TextTree[], options: YApiOptions): string => {
   return `
   {
     ${textTrees.map(item => {
     const { text, children } = item 
     const [key,,,, remark] = text
     if (children) {
-      return `${key}:${extractBodyFormTextTree(children)}}`
+      return `${key}:${extractBodyFormTextTree(children, options)}}`
     }
-    const comment = `// ${remark}\n`
+    const comment = remark && options.comment ?  `// ${remark}\n` : ''
     return `${comment}  ${key}: ''` 
   }).join(',\n')}
   }
@@ -269,7 +269,7 @@ const insertQuery = (options: YApiOptions) => {
     }
     const texts =  getTdTextFromTBody(tBodyEl)
     const query = toQueryFromTdTexts(texts)
-    const copyText = extractQueryFormQueryList(query, options.queryNotContain)
+    const copyText = extractQueryFormQueryList(query, options.queryNotContain, options)
     copyTextToClipboard(copyText)
   }
   createElementClick(iconEl, onExtractQueryClick)
@@ -277,7 +277,7 @@ const insertQuery = (options: YApiOptions) => {
 }
 
 // response
-const insertResponse = () => {
+const insertResponse = (options: YApiOptions) => {
   const responseEl =  document.querySelector('.interface-title + .ant-table-wrapper')
   if (!responseEl) {
     return
@@ -296,7 +296,7 @@ const insertResponse = () => {
     const treeTrs = toTrTree(levels)
     const textTree = getTextTreeFormTrTree(treeTrs)
     const response = toResponseFromTextTree(textTree)
-    const copyText = extractResponseTypeFromResponseList(response)
+    const copyText = extractResponseTypeFromResponseList(response, options)
     copyTextToClipboard(copyText)
 
   }
@@ -304,7 +304,7 @@ const insertResponse = () => {
   responseEl.insertBefore(iconEl, responseEl.firstChild)
 }
 
-const insertBody = () => {
+const insertBody = (options: YApiOptions) => {
   const titles =  document.querySelectorAll(COL_TITLE_SELECTOR)
   const bodyTitleEl = Array.from(titles).find(el => {
     const innerText =  (el as HTMLDivElement).innerText
@@ -332,7 +332,7 @@ const insertBody = () => {
     const treeTrs = toTrTree(levels)
     const textTree = getTextTreeFormTrTree(treeTrs)
     console.log('🚀 ~ file: content.ts:310 ~ onExtractBodyClick ~ textTree:', textTree)
-    const copyText = extractBodyFormTextTree(textTree)
+    const copyText = extractBodyFormTextTree(textTree, options)
     copyTextToClipboard(copyText)
 
   }
@@ -350,8 +350,8 @@ const start = async (options: YApiOptions) => {
     
   await sleep()
   insertQuery(options)
-  insertBody()
-  insertResponse()
+  insertBody(options)
+  insertResponse(options)
 }
 
 getItem(YAPI_KEY).then((options) => {

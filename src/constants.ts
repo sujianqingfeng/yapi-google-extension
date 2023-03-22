@@ -9,7 +9,8 @@ export const TBODY_SELECTOR = '.ant-table-tbody'
 export const DEFAULT_OPTIONS: YApiOptions = {
   lang: 'ts',
   matchRe: '/project/\\d+/interface/api/\\d+',
-  queryNotContain: ['page', 'limit', 'sort', 'order', 'offset']
+  queryNotContain: ['page', 'limit', 'sort', 'order', 'offset'],
+  comment: true
 }
 
 export const isRequired = (text: string): boolean => {

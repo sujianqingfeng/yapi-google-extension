@@ -24,14 +24,18 @@ const onSave = async () => {
   <div class="p-4 w-100">
     <h2 class="font-bold text-6">Config</h2>
 
-    <h3>url</h3>
+    <LabelTitle>url</LabelTitle>
     <el-input v-model="options.matchRe" />
-    <h3>lang</h3>
+    <LabelTitle>lang</LabelTitle>
     <el-radio-group v-model="options.lang">
       <el-radio label="ts">ts</el-radio>
       <el-radio label="js">js</el-radio>
     </el-radio-group>
-    <h3>not contain query key</h3>
+
+    <LabelTitle>comment</LabelTitle>
+    <el-switch v-model="options.comment" />
+
+    <LabelTitle>not contain query key</LabelTitle>
     <KeyTag v-model="options.queryNotContain" />
 
     <div class="mt-4">
