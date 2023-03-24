@@ -38,6 +38,9 @@ const onSave = async () => {
     <LabelTitle>not contain query key</LabelTitle>
     <KeyTag v-model="options.queryNotContain" />
 
+    <LabelTitle>extract path</LabelTitle>
+    <el-input v-model="options.responseExtractPath" />
+
     <div class="mt-4">
       <el-button type="primary" @click="onSave">save</el-button>
     </div>

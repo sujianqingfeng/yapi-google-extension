@@ -1,5 +1,5 @@
 import { getItem, transformOptions } from './utils'
-import { YAPI_KEY, DEFAULT_OPTIONS, isRequired, COL_TITLE_SELECTOR, COL_TITLE, TBODY_SELECTOR  } from './constants'
+import { YAPI_KEY, DEFAULT_OPTIONS, isRequired, COL_TITLE_SELECTOR, COL_TITLE, TBODY_SELECTOR, COL_QUERY_SELECTOR, ROW_COLLAPSED_SELECTOR, TABLE_ROW_LEVEL_CLASS } from './constants'
 import type { Query, YApiOptions, Response, TextTree, TrTree, LevelTr } from './types'
 
 const sleep = (time = 1000) => new Promise(resolve => setTimeout(resolve, time))
@@ -69,7 +69,7 @@ const getLevelTrFromTBody = (tBody: Element) => {
   const trs = queryAllTr(tBody) 
   const levels: LevelTr[] = [] 
   trs.forEach(tr => {
-    const cls = Array.from(tr.classList).find(className => className.includes('ant-table-row-level'))
+    const cls = Array.from(tr.classList).find(className => className.includes(TABLE_ROW_LEVEL_CLASS))
     const level = getRowLevel(cls as string)
     if (level === null) {
       return
@@ -191,9 +191,26 @@ const extractResponseTypeFromResponseList = (responseList: Response[], options: 
     return ''
   }
 
+  let filterList = responseList
+  // 是否提取指定路径的数据
+  if (options.responseExtractPath) {
+    const paths = options.responseExtractPath.split('.')
+    let current: Response | null | undefined = null
+    paths.forEach(path => {
+      if (current) {
+        current = current.children?.find(item => item.key === path)
+      } else {
+        current = responseList.find(item => item.key === path)
+      }
+    })
+    if (current) {
+      filterList = [current]
+    }
+  }
+
   const str = `
   {
-    ${responseList.map(getStr).join('\n  ')}
+    ${filterList.map(getStr).join('\n  ')}
   }
   `
   return str
@@ -243,7 +260,7 @@ const extractBodyFormTextTree = (textTrees: TextTree[], options: YApiOptions): s
 }
 
 const unfoldField = async (el: Element) => {
-  const collapsed = el.querySelectorAll('.ant-table-row-collapsed')
+  const collapsed = el.querySelectorAll(ROW_COLLAPSED_SELECTOR)
   if (collapsed.length === 0) {
     return
   }
@@ -251,19 +268,17 @@ const unfoldField = async (el: Element) => {
     (el as HTMLElement).click()
   })
 
-  await sleep()
+  await sleep(500)
   unfoldField(el)
   await sleep()
 }
 
 const insertQuery = (options: YApiOptions) => {
-  const queryEl = document.querySelector('.colQuery')
-  console.log('queryEl ', queryEl)
+  const queryEl = document.querySelector(COL_QUERY_SELECTOR)
   const iconEl = createIconElement('query')
 
   const onExtractQueryClick = () => {
-    console.log('click icon')
-    const tBodyEl = queryEl?.querySelector('.ant-table-tbody')
+    const tBodyEl = queryEl?.querySelector(TBODY_SELECTOR)
     if (!tBodyEl) {
       return
     }
@@ -286,7 +301,7 @@ const insertResponse = (options: YApiOptions) => {
   const iconEl = createIconElement('response')
 
   const onExtractResponseClick = async () => {
-    const tBodyEl = responseEl.querySelector('.ant-table-tbody')
+    const tBodyEl = responseEl.querySelector(TBODY_SELECTOR)
     if (!tBodyEl) {
       return
     }
@@ -298,7 +313,6 @@ const insertResponse = (options: YApiOptions) => {
     const response = toResponseFromTextTree(textTree)
     const copyText = extractResponseTypeFromResponseList(response, options)
     copyTextToClipboard(copyText)
-
   }
   createElementClick(iconEl, onExtractResponseClick)
   responseEl.insertBefore(iconEl, responseEl.firstChild)
@@ -331,10 +345,8 @@ const insertBody = (options: YApiOptions) => {
     const levels = getLevelTrFromTBody(tBodyEl)
     const treeTrs = toTrTree(levels)
     const textTree = getTextTreeFormTrTree(treeTrs)
-    console.log('🚀 ~ file: content.ts:310 ~ onExtractBodyClick ~ textTree:', textTree)
     const copyText = extractBodyFormTextTree(textTree, options)
     copyTextToClipboard(copyText)
-
   }
   createElementClick(iconEl, onExtractBodyClick)
   sibling.insertBefore(iconEl, sibling.firstChild)
@@ -347,7 +359,7 @@ const start = async (options: YApiOptions) => {
   if (!matched) {
     return
   }
-    
+
   await sleep()
   insertQuery(options)
   insertBody(options)
@@ -359,6 +371,5 @@ getItem(YAPI_KEY).then((options) => {
     options = DEFAULT_OPTIONS
   }
   transformOptions(options)
-
   start(options)
 })

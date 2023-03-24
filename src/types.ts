@@ -4,6 +4,7 @@ export interface YApiOptions {
   matchRe: string
   queryNotContain: string[]
   comment: boolean
+  responseExtractPath: string
 }
 
 export interface Query {
