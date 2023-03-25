@@ -4,6 +4,19 @@ import type { Query, YApiOptions, Response, TextTree, TrTree, LevelTr } from './
 
 const sleep = (time = 1000) => new Promise(resolve => setTimeout(resolve, time))
 
+const showMessage = (msg: string) => {
+  const el = document.createElement('div')
+  el.innerText = msg
+  el.classList.add('yapi-message-box')
+  document.body.appendChild(el)
+  setTimeout(() => {
+    el.style.top = '20px'
+  }, 0)
+  setTimeout(() => {
+    document.body.removeChild(el)
+  }, 2000)
+}
+
 const createQueryElement = (selection: string) => {
   return (el: Element) => {
     return el.querySelectorAll(selection)
@@ -286,6 +299,7 @@ const insertQuery = (options: YApiOptions) => {
     const query = toQueryFromTdTexts(texts)
     const copyText = extractQueryFormQueryList(query, options.queryNotContain, options)
     copyTextToClipboard(copyText)
+    showMessage('复制成功！')
   }
   createElementClick(iconEl, onExtractQueryClick)
   queryEl?.insertBefore(iconEl, queryEl.firstChild)
@@ -313,6 +327,7 @@ const insertResponse = (options: YApiOptions) => {
     const response = toResponseFromTextTree(textTree)
     const copyText = extractResponseTypeFromResponseList(response, options)
     copyTextToClipboard(copyText)
+    showMessage('复制成功！')
   }
   createElementClick(iconEl, onExtractResponseClick)
   responseEl.insertBefore(iconEl, responseEl.firstChild)
@@ -347,6 +362,7 @@ const insertBody = (options: YApiOptions) => {
     const textTree = getTextTreeFormTrTree(treeTrs)
     const copyText = extractBodyFormTextTree(textTree, options)
     copyTextToClipboard(copyText)
+    showMessage('复制成功！')
   }
   createElementClick(iconEl, onExtractBodyClick)
   sibling.insertBefore(iconEl, sibling.firstChild)

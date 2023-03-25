@@ -27,5 +27,6 @@ export const build = async () => {
   await buildVue()
   await buildContent()
   fse.copySync(path.resolve(ROOT, 'manifest.json'), path.resolve(ROOT, 'dist/manifest.json'))
+  fse.copySync(path.resolve(ROOT, 'src/content.css'), path.resolve(ROOT, 'dist/content.css'))
 }
 

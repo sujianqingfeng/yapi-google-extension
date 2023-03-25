@@ -1,0 +1,12 @@
+.yapi-message-box{
+  position: fixed;
+  top:-40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  transition: all 0.3s;
+  background-color: #67c23a;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+}
