@@ -366,6 +366,28 @@ const insertBody = (options: YApiOptions) => {
   }
   createElementClick(iconEl, onExtractBodyClick)
   sibling.insertBefore(iconEl, sibling.firstChild)
+
+  // type
+  const typeEl = createIconElement('type')
+
+  const onExtractBodyTypeClick = async () => {
+    const tBodyEl = sibling.querySelector(TBODY_SELECTOR)
+    if (!tBodyEl) {
+      return
+    }
+    await unfoldField(tBodyEl)
+
+    const levels = getLevelTrFromTBody(tBodyEl)
+    const treeTrs = toTrTree(levels)
+    const textTree = getTextTreeFormTrTree(treeTrs)
+    const response = toResponseFromTextTree(textTree)
+    const copyText = extractResponseTypeFromResponseList(response, options)
+    copyTextToClipboard(copyText)
+    showMessage('复制成功！')
+
+  }
+  createElementClick(typeEl, onExtractBodyTypeClick )
+  sibling.insertBefore(typeEl, sibling.firstChild)
 }
 
 const start = async (options: YApiOptions) => {
